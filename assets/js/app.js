@@ -20,5 +20,6 @@ import "phoenix_html"
 
 import socket from "./socket"
 import Room from "./room"
+import userName from "./currentUser"
 
-Room.init(socket)
+Room.init(socket, userName)
