@@ -1,6 +1,8 @@
 defmodule ChatWeb.RoomChannel do
   use ChatWeb, :channel
 
+  alias Chat.Chats
+
   def join("room:lobby", _payload, socket) do
     {:ok, socket}
   end
@@ -14,6 +16,7 @@ defmodule ChatWeb.RoomChannel do
   # It is also common to receive messages from the client and
   # broadcast to everyone in the current topic (room:lobby).
   def handle_in("shout", payload, socket) do
+    Chats.create_message(payload)
     broadcast socket, "shout", payload
     {:noreply, socket}
   end
