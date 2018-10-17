@@ -15,5 +15,5 @@ config :chat, Chat.Repo,
   username: "postgres",
   password: "postgres",
   database: "chat_test",
-  hostname: "localhost",
+  hostname: "postgres",
   pool: Ecto.Adapters.SQL.Sandbox

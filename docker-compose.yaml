@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  app:
+    build: .
+    expose:
+      - 4000
+    ports:
+      - 4000:4000
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    volumes:
+      - database_data:/var/lib/postgresql/data
+
+
+volumes:
+  database_data:
+    driver: local
