@@ -19,14 +19,13 @@ defmodule ChatWeb.RoomChannel do
   end
 
   def handle_in("shout", %{"body" => body}, socket) do
-    payload = %{
+    message = %{
       body: body,
       username: socket.assigns.username,
-      room_id: socket.assigns.room_id
     }
-    spawn(fn -> Chats.create_message(payload) end)
-    broadcast socket, "shout", payload
+    db_payload = Map.put(message, :room_id, socket.assigns.room_id)
+    spawn(fn -> Chats.create_message(db_payload) end)
+    broadcast socket, "shout", message
     {:noreply, socket}
   end
-
 end
