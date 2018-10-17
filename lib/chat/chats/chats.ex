@@ -9,33 +9,17 @@ defmodule Chat.Chats do
   alias Chat.Chats.Message
 
   @doc """
-  Returns the list of messages.
+  Returns the list of messages by room
 
   ## Examples
 
-      iex> list_messages()
+      iex> list_messages(room_id)
       [%Message{}, ...]
 
   """
-  def list_messages do
-    Repo.all(Message)
+  def list_messages(room_id) do
+    Repo.all(from m in Message, where: m.room_id == ^room_id)
   end
-
-  @doc """
-  Gets a single message.
-
-  Raises `Ecto.NoResultsError` if the Message does not exist.
-
-  ## Examples
-
-      iex> get_message!(123)
-      %Message{}
-
-      iex> get_message!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_message!(id), do: Repo.get!(Message, id)
 
   @doc """
   Creates a message.
@@ -55,50 +39,53 @@ defmodule Chat.Chats do
     |> Repo.insert()
   end
 
+
+  alias Chat.Chats.Room
+
   @doc """
-  Updates a message.
+  Returns the list of rooms.
 
   ## Examples
 
-      iex> update_message(message, %{field: new_value})
-      {:ok, %Message{}}
-
-      iex> update_message(message, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      iex> list_rooms()
+      [%Room{}, ...]
 
   """
-  def update_message(%Message{} = message, attrs) do
-    message
-    |> Message.changeset(attrs)
-    |> Repo.update()
+  def list_rooms do
+    Repo.all(Room)
   end
 
   @doc """
-  Deletes a Message.
+  Gets a single room.
+
+  Raises `Ecto.NoResultsError` if the Room does not exist.
 
   ## Examples
 
-      iex> delete_message(message)
-      {:ok, %Message{}}
+      iex> get_room!(123)
+      %Room{}
 
-      iex> delete_message(message)
+      iex> get_room!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_room!(id), do: Repo.get!(Room, id)
+
+  @doc """
+  Creates a room.
+
+  ## Examples
+
+      iex> create_room(%{field: value})
+      {:ok, %Room{}}
+
+      iex> create_room(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_message(%Message{} = message) do
-    Repo.delete(message)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking message changes.
-
-  ## Examples
-
-      iex> change_message(message)
-      %Ecto.Changeset{source: %Message{}}
-
-  """
-  def change_message(%Message{} = message) do
-    Message.changeset(message, %{})
+  def create_room(attrs \\ %{}) do
+    %Room{}
+    |> Room.changeset(attrs)
+    |> Repo.insert()
   end
 end

@@ -3,65 +3,70 @@ defmodule Chat.ChatsTest do
 
   alias Chat.Chats
 
+  describe "rooms" do
+    alias Chat.Chats.Room
+
+    @valid_attrs %{name: "some name"}
+    @invalid_attrs %{name: nil}
+
+    def room_fixture(attrs \\ %{}) do
+      {:ok, room} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Chats.create_room()
+
+      room
+    end
+
+    test "list_rooms/0 returns all rooms" do
+      room = room_fixture()
+      assert Chats.list_rooms() == [room]
+    end
+
+    test "get_room!/1 returns the room with given id" do
+      room = room_fixture()
+      assert Chats.get_room!(room.id) == room
+    end
+
+    test "create_room/1 with valid data creates a room" do
+      assert {:ok, %Room{} = room} = Chats.create_room(@valid_attrs)
+      assert room.name == "some name"
+    end
+
+    test "create_room/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Chats.create_room(@invalid_attrs)
+    end
+  end
+
   describe "messages" do
     alias Chat.Chats.Message
 
-    @valid_attrs %{body: "some body", name: "some name"}
-    @update_attrs %{body: "some updated body", name: "some updated name"}
-    @invalid_attrs %{body: nil, name: nil}
+    @valid_attrs %{body: "some body", username: "some username"}
+    @invalid_attrs %{body: nil, username: nil}
 
     def message_fixture(attrs \\ %{}) do
+      {:ok, room} = Chats.create_room(%{name: "foo"})
       {:ok, message} =
-        attrs
+        Map.put(attrs, :room_id, room.id)
         |> Enum.into(@valid_attrs)
         |> Chats.create_message()
 
       message
     end
 
-    test "list_messages/0 returns all messages" do
+    test "list_messages/1 returns all messages of the room" do
       message = message_fixture()
-      assert Chats.list_messages() == [message]
-    end
-
-    test "get_message!/1 returns the message with given id" do
-      message = message_fixture()
-      assert Chats.get_message!(message.id) == message
+      assert Chats.list_messages(message.room_id) == [message]
     end
 
     test "create_message/1 with valid data creates a message" do
-      assert {:ok, %Message{} = message} = Chats.create_message(@valid_attrs)
+      message = message_fixture()
       assert message.body == "some body"
-      assert message.name == "some name"
+      assert message.username == "some username"
     end
 
     test "create_message/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Chats.create_message(@invalid_attrs)
-    end
-
-    test "update_message/2 with valid data updates the message" do
-      message = message_fixture()
-      assert {:ok, message} = Chats.update_message(message, @update_attrs)
-      assert %Message{} = message
-      assert message.body == "some updated body"
-      assert message.name == "some updated name"
-    end
-
-    test "update_message/2 with invalid data returns error changeset" do
-      message = message_fixture()
-      assert {:error, %Ecto.Changeset{}} = Chats.update_message(message, @invalid_attrs)
-      assert message == Chats.get_message!(message.id)
-    end
-
-    test "delete_message/1 deletes the message" do
-      message = message_fixture()
-      assert {:ok, %Message{}} = Chats.delete_message(message)
-      assert_raise Ecto.NoResultsError, fn -> Chats.get_message!(message.id) end
-    end
-
-    test "change_message/1 returns a message changeset" do
-      message = message_fixture()
-      assert %Ecto.Changeset{} = Chats.change_message(message)
     end
   end
 end

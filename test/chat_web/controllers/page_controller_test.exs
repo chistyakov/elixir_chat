@@ -3,6 +3,6 @@ defmodule ChatWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get conn, "/"
-    assert html_response(conn, 200) =~ "chat-box"
+    assert html_response(conn, 200) =~ "Simple chat"
   end
 end

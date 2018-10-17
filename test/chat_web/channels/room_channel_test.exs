@@ -5,24 +5,14 @@ defmodule ChatWeb.RoomChannelTest do
 
   setup do
     {:ok, _, socket} =
-      socket("user_id", %{some: :assign})
-      |> subscribe_and_join(RoomChannel, "room:lobby")
+      socket("user_id", %{:username => "alice"})
+      |> subscribe_and_join(RoomChannel, "room:1")
 
     {:ok, socket: socket}
   end
 
-  test "ping replies with status ok", %{socket: socket} do
-    ref = push socket, "ping", %{"hello" => "there"}
-    assert_reply ref, :ok, %{"hello" => "there"}
-  end
-
-  test "shout broadcasts to room:lobby", %{socket: socket} do
-    push socket, "shout", %{"hello" => "all"}
-    assert_broadcast "shout", %{"hello" => "all"}
-  end
-
   test "broadcasts are pushed to the client", %{socket: socket} do
-    broadcast_from! socket, "broadcast", %{"some" => "data"}
-    assert_push "broadcast", %{"some" => "data"}
+    broadcast_from! socket, "broadcast", %{"username" => "foo", "body" => "bar"}
+    assert_push "broadcast", %{"username" => "foo", "body" => "bar"}
   end
 end

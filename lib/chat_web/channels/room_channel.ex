@@ -3,21 +3,30 @@ defmodule ChatWeb.RoomChannel do
 
   alias Chat.Chats
 
-  def join("room:lobby", _payload, socket) do
+  def join("room:" <> room_id, _payload, socket) do
+    socket = assign(socket, :room_id, String.to_integer(room_id))
+    send(self(), :after_join)
     {:ok, socket}
   end
 
-  # Channels can be used in a request/response fashion
-  # by sending replies to requests from the client
-  def handle_in("ping", payload, socket) do
-    {:reply, {:ok, payload}, socket}
+  def handle_info(:after_join, socket) do
+    Chats.list_messages(socket.assigns.room_id)
+    |> Enum.each(fn msg -> push(socket, "shout", %{
+        username: msg.username,
+        body: msg.body,
+      }) end)
+    {:noreply, socket} # :noreply
   end
 
-  # It is also common to receive messages from the client and
-  # broadcast to everyone in the current topic (room:lobby).
-  def handle_in("shout", payload, socket) do
+  def handle_in("shout", %{"body" => body}, socket) do
+    payload = %{
+      body: body,
+      username: socket.assigns.username,
+      room_id: socket.assigns.room_id
+    }
     Chats.create_message(payload)
     broadcast socket, "shout", payload
     {:noreply, socket}
   end
+
 end

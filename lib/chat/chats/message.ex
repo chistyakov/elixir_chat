@@ -5,7 +5,8 @@ defmodule Chat.Chats.Message do
 
   schema "messages" do
     field :body, :string
-    field :name, :string
+    field :username, :string
+    field :room_id, :id
 
     timestamps()
   end
@@ -13,7 +14,7 @@ defmodule Chat.Chats.Message do
   @doc false
   def changeset(message, attrs) do
     message
-    |> cast(attrs, [:name, :body])
-    |> validate_required([:name, :body])
+    |> cast(attrs, [:username, :body, :room_id])
+    |> validate_required([:username, :body, :room_id])
   end
 end

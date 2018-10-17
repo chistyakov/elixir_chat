@@ -1,0 +1,4 @@
+<h3><%= @name %></h3>
+
+<div data-room="room:<%= @id %>" id="messages"></div>
+<textarea id="input" class='form-control' rows=5 placeholder="Type your message and hit enter..."></textarea>

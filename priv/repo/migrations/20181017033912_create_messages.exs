@@ -3,11 +3,13 @@ defmodule Chat.Repo.Migrations.CreateMessages do
 
   def change do
     create table(:messages) do
-      add :name, :string
+      add :username, :string
       add :body, :text
+      add :room_id, references(:rooms, on_delete: :nothing)
 
       timestamps()
     end
 
+    create index(:messages, [:room_id])
   end
 end

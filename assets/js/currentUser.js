@@ -1,3 +1,8 @@
-let userName = prompt("Please enter your name", "Harry Potter")
+let username = localStorage.getItem("username");
 
-export default userName
+if(!username) {
+    username =  prompt("Please enter your name", "Harry Potter")
+    localStorage.setItem("username", username)
+}
+
+export default username

@@ -13,12 +13,22 @@
 
   <body>
     <div class="container">
-      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
 
-      <main role="main">
-        <%= render @view_module, @view_template, assigns %>
-      </main>
+      <a href="/room/new" class="btn btn-primary">Create Room</a>
+
+      <div class="row">
+        <div class="col-md-2">
+          <%= for %_{:id => id, :name => name} <- Chat.Chats.list_rooms do %>
+            <a href="/room/<%= id %>"><%= name %></a> <br/>
+          <% end %>
+        </div>
+  
+        <div class="col-md-10">
+          <main role="main">
+            <%= render @view_module, @view_template, assigns %>
+          </main>
+        </div>
+      </div>
 
     </div> <!-- /container -->
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>

@@ -1,28 +1,28 @@
 let Room = {
-  init(socket, currentUserName) {
-    let channel = socket.channel('room:lobby', {})
+  init(socket) {
+    let messages = document.getElementById("messages")
+    let room = messages.attributes['data-room'].value
+    let channel = socket.channel(room, {})
     channel.join()
-    this.listenForChats(channel, currentUserName)
+      .receive("ok", resp => { console.log("Joined successfully", resp) })
+      .receive("error", resp => { console.log("Unable to join", resp) })
+    this.listenForMessages(channel)
   },
 
-  listenForChats(channel, currentUserName) {
-    document.getElementById('chat-form').addEventListener('submit', function(e){
-      e.preventDefault()
+  listenForMessages(channel) {
+    let input = document.getElementById("input");
+    input.addEventListener("keyup", function(e){
+        if (e.keyCode != 13) {
+          return
+        }
+        channel.push("shout", {body: input.value})
+        input.value = "";
+      })
 
-      let userMsg = document.getElementById('user-msg').value
-
-      channel.push('shout', {name: currentUserName, body: userMsg})
-
-      document.getElementById('user-msg').value = ''
-    })
-
-    channel.on('shout', payload => {
-        let chatBox = document.querySelector('#chat-box')
-        let msgBlock = document.createElement('p')
-
-      msgBlock.insertAdjacentHTML('beforeend', `<b>${payload.name}:</b> ${payload.body}`)
-      chatBox.appendChild(msgBlock)
-    })
+    channel.on("shout", function(message){
+    let messages = document.getElementById("messages")
+    messages.innerHTML += `<b><div class=message>@${message.username}:</b> ${message.body}</div>`
+  })
   }
 }
   
