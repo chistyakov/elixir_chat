@@ -24,7 +24,7 @@ defmodule ChatWeb.RoomChannel do
       username: socket.assigns.username,
       room_id: socket.assigns.room_id
     }
-    Chats.create_message(payload)
+    spawn(fn -> Chats.create_message(payload) end)
     broadcast socket, "shout", payload
     {:noreply, socket}
   end
